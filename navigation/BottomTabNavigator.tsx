@@ -2,18 +2,19 @@
  * Learn more about createBottomTabNavigator:
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
-
+import React, { useEffect, useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
-
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HomeScreen from '../screens/HomeScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { BottomTabParamList, HomeNavigatorParamList, TabTwoParamList } from '../types';
 import ProfilePicture from "../components/ProfilePicture";
+import { API, Auth, graphqlOperation } from "aws-amplify";
+import { getUser } from "../graphql/queries";
+
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -70,6 +71,31 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 const TabOneStack = createStackNavigator<HomeNavigatorParamList>();
 
 function HomeNavigator() {
+
+  const [user, setUser] = useState( null );
+
+  useEffect(() => {
+
+    const fetchUser = async () => {
+
+      const userInfo = await Auth.currentAuthenticatedUser({bypassCache:true})
+      if (!userInfo){
+        return;
+      }
+
+      try {
+        const userData = await API.graphql(graphqlOperation(getUser, {id: userInfo.attributes.sub});
+      if (userData){
+        setUser(userData.data.getUser);
+      }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+      fetchUser();
+  }, [])
+
+
   return (
     <TabOneStack.Navigator>
       <TabOneStack.Screen

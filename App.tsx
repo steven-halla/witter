@@ -10,6 +10,8 @@ import Amplify, { Auth, API, graphqlOperation } from "aws-amplify";
 import config from "./src/aws-exports";
 import { withAuthenticator } from 'aws-amplify-react-native';
 import { getUser } from'./src/graphql/queries';
+import { createUser } from "./graphql/mutations";
+import { CreateUserInput } from "./API";
 
 Amplify.configure(config);
 
@@ -22,7 +24,8 @@ function App() {
   }
 
   const saveUserToDB = async (user) => {
-
+    console.log(user);
+    await API.graphql(graphqlOperation(createUser, { input: user }))
   }
 
   useEffect(() => {
@@ -35,8 +38,8 @@ function App() {
         console.log(userData)
         if(userData.data.getUser) {
           const user = {
-            id: userInfo.attributes.sub,
-            username: userInfo.attributes.username,
+            id: userInfo.sub,
+            username: userInfo.username,
             name: userInfo.attributes.username,
             email: userInfo.attributes.email,
             image: getRandomImage(),
