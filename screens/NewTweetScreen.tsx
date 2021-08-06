@@ -6,7 +6,9 @@ import { Text, View } from '../components/Themed';
 import { AntDesign, EvilIcons } from "@expo/vector-icons";
 import Colors from "../constants/Colors";
 import ProfilePicture from "../components/ProfilePicture";
-
+import { API, Auth, graphqlOperation } from "aws-amplify";
+import { createTweet } from "../graphql/mutations";
+import { useNavigation } from "@react-navigation/native";
 
 
 
@@ -16,15 +18,24 @@ export default function NewTweetScreen() {
   const [tweet, setTweet] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 
+  const navigation = useNavigation();
 
-  const onPostTweet = () => {
-    console.log(`Posting the tweet: ${tweet}
-    Image: ${imageUrl}`);
+  const onPostTweet = async () => {
+    try {
 
+      const currentUser = await Auth.currentAuthenticatedUser({bypassCache: true});
 
-
+      const newTweet = {
+        content: tweet,
+        image: imageUrl,
+        userId: currentUser.attributes.sub,
+      }
+      await API.graphql(graphqlOperation(createTweet,{input: newTweet }));
+      navigation.goBack();
+    } catch (e) {
+      console.log(e);
+    }
   }
-
   return (
     <SafeAreaView style={styles.container}>
         <View style={styles.headerContainer}>
