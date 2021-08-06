@@ -84,7 +84,7 @@ function HomeNavigator() {
       }
 
       try {
-        const userData = await API.graphql(graphqlOperation(getUser, {id: userInfo.attributes.sub});
+        const userData = await API.graphql(graphqlOperation(getUser, {id: userInfo.attributes.sub}));
       if (userData){
         setUser(userData.data.getUser);
       }
@@ -115,7 +115,7 @@ function HomeNavigator() {
             <MaterialCommunityIcons name={"star-four-points-outline"} size={30} color={Colors.light.tint} />
           ),
           headerLeft: () => (
-            <ProfilePicture size={40} image={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6fH4WcqPLntpPILC1Ag-_D7dkrljytz9iNg&usqp=CAU'} />
+            <ProfilePicture size={40} image={user?.image} />
           )
         }}
       />
